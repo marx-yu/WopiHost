@@ -14,7 +14,7 @@ namespace WopiCobaltHost
     {
         static void Main()
         {
-            CobaltServer svr = new CobaltServer(@"D:\\WopiHostDemos\\wopihost-example\\WopiHost\\App_Data");
+            CobaltServer svr = new CobaltServer(@"D:\\wopi-docs");
             svr.Start();
 
             Console.WriteLine("A simple wopi webserver. Press any key to quit.");

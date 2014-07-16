@@ -18,6 +18,7 @@ namespace WopiCobaltHost
         private Dictionary<String, CobaltSession> m_sessions;
         private Timer m_timer;
         private readonly int m_timeout = 60 * 60 * 1000;
+        private readonly int m_closewait = 3 * 60 * 60;
 
         public static CobaltSessionManager Instance
         {
@@ -68,13 +69,23 @@ namespace WopiCobaltHost
             }
         }
 
+        public void DelSession(CobaltSession session)
+        {
+            lock (CobaltSessionManager.m_syncObj)
+            {
+                // clean up
+                session.Dispose();
+                m_sessions.Remove(session.SessionId);
+            }
+        }
+
         private void CleanUp(object sender, ElapsedEventArgs e)
         {
             lock (CobaltSessionManager.m_syncObj)
             {
                 foreach (var session in m_sessions.Values)
                 {
-                    if (session.LastUpdated.AddMilliseconds(m_timeout) < DateTime.Now)
+                    if (session.LastUpdated.AddSeconds(m_closewait) < DateTime.Now)
                     {
                         // save the changes to the file
                         session.Save();

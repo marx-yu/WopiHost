@@ -76,9 +76,9 @@ namespace WopiCobaltHost
                 if (File.Exists(cache_file))
                     File.Delete(cache_file);
                 File.Copy(m_fileinfo.FullName, cache_file, true);
-                var src = FileAtom.FromExisting(cache_file, m_disposal);
+                var src_content = FileAtom.FromExisting(cache_file, m_disposal);
                 Cobalt.Metrics o1;
-                m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).SetStream(RootId.Default.Value, src, out o1);
+                m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).SetStream(RootId.Default.Value, src_content, out o1);
                 m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).GetStream(RootId.Default.Value).Flush();
             }
         }
@@ -143,7 +143,7 @@ namespace WopiCobaltHost
             cfi.SupportsCoauth = true;
             cfi.SupportsCobalt = true;
             cfi.SupportsFolders = true;
-            cfi.SupportsLocks = false;
+            cfi.SupportsLocks = true;
             cfi.SupportsScenarioLinks = false;
             cfi.SupportsSecureStore = false;
             cfi.SupportsUpdate = true;
@@ -169,7 +169,7 @@ namespace WopiCobaltHost
         {
             lock (m_fileinfo)
             {
-                using (FileStream fileStream = m_fileinfo.OpenWrite())
+                using (FileStream fileStream = m_fileinfo.Open(FileMode.Truncate))
                 {
                     new GenericFda(m_cobaltFile.CobaltEndpoint, null).GetContentStream().CopyTo(fileStream);
                 }
