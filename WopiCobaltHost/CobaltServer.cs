@@ -47,16 +47,8 @@ namespace WopiCobaltHost
             context.Response.ContentType = @"application/json";
             context.Response.OutputStream.Write(buffer, 0, buffer.Length);
             context.Response.OutputStream.Close();
-            context.Response.StatusCode = 500;
-            m_listener.BeginGetContext(ProcessRequest, m_listener);
-        }
-
-        private void ProcessCobaltRequest(HttpListenerContext context)
-        {
-        }
-        
-        private void ProcessWopiRequest(HttpListenerContext context)
-        {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.Close();
         }
 
         private void ProcessRequest(IAsyncResult result)
@@ -73,6 +65,7 @@ namespace WopiCobaltHost
                 {
                     Console.WriteLine(@"Invalid request");
                     ErrorResponse(context, @"Invalid request parameter");
+                    m_listener.BeginGetContext(ProcessRequest, m_listener);
                     return;
                 }
 
@@ -137,6 +130,28 @@ namespace WopiCobaltHost
                     context.Response.ContentType = @"application/json";
                     context.Response.ContentLength64 = jsonResponse.Length;
                     context.Response.OutputStream.Write(jsonResponse, 0, jsonResponse.Length);
+                    context.Response.Close();
+                }
+                else if (context.Request.HttpMethod.Equals(@"POST") &&
+                    (context.Request.Headers["X-WOPI-Override"].Equals("LOCK") ||
+                    context.Request.Headers["X-WOPI-Override"].Equals("UNLOCK") ||
+                    context.Request.Headers["X-WOPI-Override"].Equals("REFRESH_LOCK"))
+                    )
+                {
+                    context.Response.ContentLength64 = 0;
+                    context.Response.ContentType = @"text/html";
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    context.Response.Close();
+                }
+                else if (stringarr.Length == 5 && context.Request.HttpMethod.Equals(@"POST"))
+                {
+                    // put file's content
+                    var ms = new MemoryStream();
+                    context.Request.InputStream.CopyTo(ms);
+                    fileSession.Save(ms.ToArray());
+                    context.Response.ContentLength64 = 0;
+                    context.Response.ContentType = @"text/html";
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
                     context.Response.Close();
                 }
                 else

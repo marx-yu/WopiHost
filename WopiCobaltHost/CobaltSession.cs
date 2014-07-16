@@ -59,12 +59,12 @@ namespace WopiCobaltHost
             wacupdate.Schema = CobaltFilePartition.Schema.ShreddedCobalt;
             wacupdate.PartitionId = FilePartitionId.WordWacUpdate;
 
-            Dictionary<FilePartitionId, CobaltFilePartitionConfig> pd = new Dictionary<FilePartitionId, CobaltFilePartitionConfig>();
-            pd.Add(FilePartitionId.Content, content);
-            pd.Add(FilePartitionId.WordWacUpdate, wacupdate);
-            pd.Add(FilePartitionId.CoauthMetadata, coauth);
+            Dictionary<FilePartitionId, CobaltFilePartitionConfig> partitionConfs = new Dictionary<FilePartitionId, CobaltFilePartitionConfig>();
+            partitionConfs.Add(FilePartitionId.Content, content);
+            partitionConfs.Add(FilePartitionId.WordWacUpdate, wacupdate);
+            partitionConfs.Add(FilePartitionId.CoauthMetadata, coauth);
 
-            m_cobaltFile = new CobaltFile(m_disposal, pd, new CobaltHostLockingStore(this), null);
+            m_cobaltFile = new CobaltFile(m_disposal, partitionConfs, new CobaltHostLockingStore(this), null);
 
             if (m_fileinfo.Exists)
             {
@@ -172,6 +172,17 @@ namespace WopiCobaltHost
                 using (FileStream fileStream = m_fileinfo.Open(FileMode.Truncate))
                 {
                     new GenericFda(m_cobaltFile.CobaltEndpoint, null).GetContentStream().CopyTo(fileStream);
+                }
+            }
+        }
+
+        public void Save(byte[] new_content)
+        {
+            lock (m_fileinfo)
+            {
+                using (FileStream fileStream = m_fileinfo.Open(FileMode.Truncate))
+                {
+                    fileStream.Write(new_content, 0, new_content.Length);
                 }
             }
         }
