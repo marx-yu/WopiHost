@@ -13,26 +13,14 @@ using System.Threading.Tasks;
 
 namespace WopiCobaltHost
 {
-    public class CobaltSession
+    public class CobaltSession : EditSession
     {
-        private readonly string m_sessionId;
-        private readonly string m_login;
-        private readonly string m_name;
-        private readonly string m_email;
-        private readonly bool m_isAnonymous;
-        private readonly FileInfo m_fileinfo;
         private readonly CobaltFile m_cobaltFile;
         private readonly DisposalEscrow m_disposal;
-        private DateTime m_lastUpdated;
 
         public CobaltSession(string sessionId, string filePath, string login = "Anonymous", string name = "Anonymous", string email = "", bool isAnonymous = true)
+            :base(sessionId, filePath, login, name, email, isAnonymous)
         {
-            m_sessionId = sessionId;
-            m_fileinfo = new FileInfo(filePath);
-            m_name = name;
-            m_login = login;
-            m_email = email;
-            m_isAnonymous = isAnonymous;
             m_disposal = new DisposalEscrow(m_sessionId);
 
             CobaltFilePartitionConfig content = new CobaltFilePartitionConfig();
@@ -83,89 +71,17 @@ namespace WopiCobaltHost
             }
         }
 
-        public string SessionId
+        
+
+        override public byte[] GetFileContent()
         {
-            get { return m_sessionId; }
-            set {}
+            MemoryStream ms = new MemoryStream();
+            new GenericFda(m_cobaltFile.CobaltEndpoint, null).GetContentStream().CopyTo(ms);
+            return ms.ToArray();
         }
-
-        public string Login
-        {
-            get { return m_login; }
-            set {}
-        }
-
-        public string Name
-        {
-            get { return m_name; }
-            set {}
-        }
-
-        public string Email
-        {
-            get { return m_email; }
-            set {}
-        }
-
-        public bool IsAnonymous
-        {
-            get { return m_isAnonymous; }
-            set {}
-        }
-
-        public DateTime LastUpdated
-        {
-            get { return m_lastUpdated; }
-            set {}
-        }
-
-        public WopiCheckFileInfo GetCheckFileInfo()
-        {
-            WopiCheckFileInfo cfi = new WopiCheckFileInfo();
-
-            cfi.BaseFileName = m_fileinfo.Name;
-            cfi.OwnerId = m_login;
-            cfi.UserFriendlyName = m_name;
-
-            lock (m_fileinfo)
-            {
-                if (m_fileinfo.Exists)
-                {
-                    cfi.Size = m_fileinfo.Length;
-                }
-                else
-                {
-                    cfi.Size = 0;
-                }
-            }
-
-            cfi.Version = m_fileinfo.LastWriteTimeUtc.ToString("s");
-            cfi.SupportsCoauth = true;
-            cfi.SupportsCobalt = true;
-            cfi.SupportsFolders = true;
-            cfi.SupportsLocks = true;
-            cfi.SupportsScenarioLinks = false;
-            cfi.SupportsSecureStore = false;
-            cfi.SupportsUpdate = true;
-            cfi.UserCanWrite = true;
-
-            return cfi;
-        }
-
-        public Bytes GetFileContent()
-        {
-            return new GenericFda(m_cobaltFile.CobaltEndpoint, null).GetContentStream();
-        }
-
-        public long FileLength
-        {
-            get
-            {
-                return m_fileinfo.Length;
-            }
-        }
-
-        public void Save()
+        override public void Save(byte[] new_content)
+        { }
+        override public void Save()
         {
             lock (m_fileinfo)
             {
@@ -176,24 +92,13 @@ namespace WopiCobaltHost
             }
         }
 
-        public void Save(byte[] new_content)
-        {
-            lock (m_fileinfo)
-            {
-                using (FileStream fileStream = m_fileinfo.Open(FileMode.Truncate))
-                {
-                    fileStream.Write(new_content, 0, new_content.Length);
-                }
-            }
-        }
-
-        public void ExecuteRequestBatch(RequestBatch requestBatch)
+        override public void ExecuteRequestBatch(RequestBatch requestBatch) 
         {
             m_cobaltFile.CobaltEndpoint.ExecuteRequestBatch(requestBatch);
             m_lastUpdated = DateTime.Now;
         }
 
-        internal void Dispose()
+        override public void Dispose()
         {
             m_disposal.Dispose();
         }

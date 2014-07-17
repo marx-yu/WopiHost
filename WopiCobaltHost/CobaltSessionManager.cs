@@ -15,7 +15,7 @@ namespace WopiCobaltHost
     {
         private static volatile CobaltSessionManager m_instance;
         private static object m_syncObj = new object();
-        private Dictionary<String, CobaltSession> m_sessions;
+        private Dictionary<String, EditSession> m_sessions;
         private Timer m_timer;
         private readonly int m_timeout = 60 * 60 * 1000;
         private readonly int m_closewait = 3 * 60 * 60;
@@ -43,25 +43,25 @@ namespace WopiCobaltHost
             m_timer.Elapsed += CleanUp;
             m_timer.Enabled = true;
 
-            m_sessions = new Dictionary<String, CobaltSession>();
+            m_sessions = new Dictionary<String, EditSession>();
         }
 
-        public CobaltSession GetSession(string sessionId)
+        public EditSession GetSession(string sessionId)
         {
-            CobaltSession cs;
+            EditSession es;
 
             lock (CobaltSessionManager.m_syncObj)
             {
-                if (!m_sessions.TryGetValue(sessionId, out cs))
+                if (!m_sessions.TryGetValue(sessionId, out es))
                 {
                     return null;
                 }
             }
 
-            return cs;
+            return es;
         }
 
-        public void AddSession(CobaltSession session)
+        public void AddSession(EditSession session)
         {
             lock (CobaltSessionManager.m_syncObj)
             {
@@ -69,7 +69,7 @@ namespace WopiCobaltHost
             }
         }
 
-        public void DelSession(CobaltSession session)
+        public void DelSession(EditSession session)
         {
             lock (CobaltSessionManager.m_syncObj)
             {
