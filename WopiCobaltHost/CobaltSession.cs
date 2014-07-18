@@ -64,9 +64,16 @@ namespace WopiCobaltHost
                 if (File.Exists(cache_file))
                     File.Delete(cache_file);
                 File.Copy(m_fileinfo.FullName, cache_file, true);
-                var src_content = FileAtom.FromExisting(cache_file, m_disposal);
+                var file_atom = FileAtom.FromExisting(cache_file, m_disposal);
+                //if want to avoid temp file, you can use memory Atom below
+                //MemoryStream ms = new MemoryStream();
+                //using (FileStream fileStream = m_fileinfo.OpenRead())
+                //{
+                //    fileStream.CopyTo(ms);
+                //}
+                //var src_atom = new AtomFromByteArray(ms.ToArray());
                 Cobalt.Metrics o1;
-                m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).SetStream(RootId.Default.Value, src_content, out o1);
+                m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).SetStream(RootId.Default.Value, file_atom, out o1);
                 m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).GetStream(RootId.Default.Value).Flush();
             }
         }
@@ -79,8 +86,6 @@ namespace WopiCobaltHost
             new GenericFda(m_cobaltFile.CobaltEndpoint, null).GetContentStream().CopyTo(ms);
             return ms.ToArray();
         }
-        override public void Save(byte[] new_content)
-        { }
         override public void Save()
         {
             lock (m_fileinfo)
@@ -101,6 +106,38 @@ namespace WopiCobaltHost
         override public void Dispose()
         {
             m_disposal.Dispose();
+        }
+        override public WopiCheckFileInfo GetCheckFileInfo()
+        {
+            WopiCheckFileInfo cfi = new WopiCheckFileInfo();
+
+            cfi.BaseFileName = m_fileinfo.Name;
+            cfi.OwnerId = m_login;
+            cfi.UserFriendlyName = m_name;
+
+            lock (m_fileinfo)
+            {
+                if (m_fileinfo.Exists)
+                {
+                    cfi.Size = m_fileinfo.Length;
+                }
+                else
+                {
+                    cfi.Size = 0;
+                }
+            }
+
+            cfi.Version = m_fileinfo.LastWriteTimeUtc.ToString("s");
+            cfi.SupportsCoauth = true;
+            cfi.SupportsCobalt = true;
+            cfi.SupportsFolders = true;
+            cfi.SupportsLocks = true;
+            cfi.SupportsScenarioLinks = false;
+            cfi.SupportsSecureStore = false;
+            cfi.SupportsUpdate = true;
+            cfi.UserCanWrite = true;
+
+            return cfi;
         }
     }
 }

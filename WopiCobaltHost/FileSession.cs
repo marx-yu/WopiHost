@@ -14,6 +14,38 @@ namespace WopiCobaltHost
             :base(sessionId, filePath, login, name, email, isAnonymous)
         { }
 
+        override public WopiCheckFileInfo GetCheckFileInfo()
+        {
+            WopiCheckFileInfo cfi = new WopiCheckFileInfo();
+
+            cfi.BaseFileName = m_fileinfo.Name;
+            cfi.OwnerId = m_login;
+            cfi.UserFriendlyName = m_name;
+
+            lock (m_fileinfo)
+            {
+                if (m_fileinfo.Exists)
+                {
+                    cfi.Size = m_fileinfo.Length;
+                }
+                else
+                {
+                    cfi.Size = 0;
+                }
+            }
+
+            cfi.Version = DateTime.Now.ToString("s");
+            cfi.SupportsCoauth = true;
+            cfi.SupportsCobalt = false;
+            cfi.SupportsFolders = true;
+            cfi.SupportsLocks = true;
+            cfi.SupportsScenarioLinks = false;
+            cfi.SupportsSecureStore = false;
+            cfi.SupportsUpdate = true;
+            cfi.UserCanWrite = true;
+
+            return cfi;
+        }
         override public byte[] GetFileContent()
         {
             MemoryStream ms = new MemoryStream();
@@ -26,11 +58,6 @@ namespace WopiCobaltHost
             }
             return ms.ToArray();
         }
-
-
-        override public void Save()
-        {
-        }
         override public void Save(byte[] new_content)
         {
             lock (m_fileinfo)
@@ -41,13 +68,6 @@ namespace WopiCobaltHost
                 }
             }
             m_lastUpdated = DateTime.Now;
-        }
-        override public void ExecuteRequestBatch(RequestBatch requestBatch)
-        {            
-        }
-
-        override public void Dispose()
-        {
         }
     }
 }

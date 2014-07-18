@@ -63,45 +63,6 @@ namespace WopiCobaltHost
             get { return m_lastUpdated; }
             set { }
         }
-
-        public WopiCheckFileInfo GetCheckFileInfo()
-        {
-            WopiCheckFileInfo cfi = new WopiCheckFileInfo();
-
-            cfi.BaseFileName = m_fileinfo.Name;
-            cfi.OwnerId = m_login;
-            cfi.UserFriendlyName = m_name;
-
-            lock (m_fileinfo)
-            {
-                if (m_fileinfo.Exists)
-                {
-                    cfi.Size = m_fileinfo.Length;
-                    //using (FileStream stream = m_fileinfo.OpenRead())
-                    //{
-                    //    var checksum = SHA256.Create().ComputeHash(stream);
-                    //    cfi.SHA256 = Convert.ToBase64String(checksum);
-                    //}
-                }
-                else
-                {
-                    cfi.Size = 0;
-                }
-            }
-
-            cfi.Version = m_fileinfo.LastWriteTimeUtc.ToString("s");
-            cfi.SupportsCoauth = true;
-            cfi.SupportsCobalt = true;
-            cfi.SupportsFolders = true;
-            cfi.SupportsLocks = true;
-            cfi.SupportsScenarioLinks = false;
-            cfi.SupportsSecureStore = false;
-            cfi.SupportsUpdate = true;
-            cfi.UserCanWrite = true;
-
-            return cfi;
-        }
-
         public long FileLength
         {
             get
@@ -109,11 +70,11 @@ namespace WopiCobaltHost
                 return m_fileinfo.Length;
             }
         }
-        abstract public void Save(byte[] new_content);
-        abstract public void Dispose();
+        abstract public WopiCheckFileInfo GetCheckFileInfo();
         abstract public byte[] GetFileContent();
-
-        abstract public void Save();
-        abstract public void ExecuteRequestBatch(RequestBatch requestBatch);
+        virtual public void Save(byte[] new_content) { }
+        virtual public void Dispose() { }
+        virtual public void Save() { }
+        virtual public void ExecuteRequestBatch(RequestBatch requestBatch) { }
     }
 }
