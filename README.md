@@ -3,6 +3,7 @@
 This repository contains a Wopi Host demo.
 With Cobalt(FSSHTTPB/D) support for Office Web Apps. 
 Support DOCX Editing, and also PPTX,XLSX.
+Welcome any contribution, and discussion of supporting coauthoring
 
 ### Requirements
 
