@@ -99,7 +99,7 @@ namespace WopiCobaltHost
                     }
                     else if (stringarr.Length == 5 && stringarr[4].Equals(@"contents"))
                     {
-                        // get and put file's content, only for xlsx and pptx
+                        // get and put file's content
                         if (context.Request.HttpMethod.Equals(@"POST"))
                         {
                             var ms = new MemoryStream();
@@ -118,47 +118,14 @@ namespace WopiCobaltHost
                         }
                         context.Response.Close();
                     }
-                    else if (context.Request.HttpMethod.Equals(@"POST") && context.Request.Headers["X-WOPI-Override"].Equals("COBALT"))
-                    {
-                        Console.WriteLine("cobalt, for docx and pptx");
-                        //cobalt, for docx and pptx
-                        /*
-                        var ms = new MemoryStream();
-                        context.Request.InputStream.CopyTo(ms);
-                        AtomFromByteArray atomRequest = new AtomFromByteArray(ms.ToArray());
-                        RequestBatch requestBatch = new RequestBatch();
-
-                        Object ctx;
-                        ProtocolVersion protocolVersion;
-
-                        requestBatch.DeserializeInputFromProtocol(atomRequest, out ctx, out protocolVersion);
-                        editSession.ExecuteRequestBatch(requestBatch);
-
-                        foreach (Request request in requestBatch.Requests)
-                        {
-                            if (request.GetType() == typeof(PutChangesRequest) && request.PartitionId == FilePartitionId.Content)
-                            {
-                                //upload file to hdfs
-                                editSession.Save();
-                            }
-                        }
-                        var response = requestBatch.SerializeOutputToProtocol(protocolVersion);
-
-                        context.Response.Headers.Add("X-WOPI-CorellationID", context.Request.Headers["X-WOPI-CorrelationID"]);
-                        context.Response.Headers.Add("request-id", context.Request.Headers["X-WOPI-CorrelationID"]);
-                        context.Response.ContentType = @"application/octet-stream";
-                        context.Response.ContentLength64 = response.Length;
-                        response.CopyTo(context.Response.OutputStream);
-                        context.Response.Close();
-                        */
-                    }
                     else if (context.Request.HttpMethod.Equals(@"POST") &&
                         (context.Request.Headers["X-WOPI-Override"].Equals("LOCK") ||
                         context.Request.Headers["X-WOPI-Override"].Equals("UNLOCK") ||
                         context.Request.Headers["X-WOPI-Override"].Equals("REFRESH_LOCK"))
                         )
                     {
-                        //lock, for xlsx and pptx
+                        //lock, 
+                        Console.WriteLine("request lock: " + context.Request.Headers["X-WOPI-Override"]);
                         context.Response.ContentLength64 = 0;
                         context.Response.ContentType = @"text/html";
                         context.Response.StatusCode = (int)HttpStatusCode.OK;
