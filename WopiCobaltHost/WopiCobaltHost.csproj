@@ -49,9 +49,6 @@
   <PropertyGroup />
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Microsoft.CobaltCore">
-      <HintPath>..\External\Microsoft.CobaltCore.DLL</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -67,10 +64,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WopiCheckFileInfo.cs" />
-    <Compile Include="CobaltSession.cs" />
-    <Compile Include="CobaltHostLockingStore.cs" />
     <Compile Include="CobaltServer.cs" />
-    <Compile Include="CobaltSessionManager.cs" />
+    <Compile Include="EditSessionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

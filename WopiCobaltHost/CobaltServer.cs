@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-using Cobalt;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,7 +62,7 @@ namespace WopiCobaltHost
                     var stringarr = context.Request.Url.AbsolutePath.Split('/');
                     var access_token = context.Request.QueryString["access_token"];
 
-                    if (stringarr.Length < 3 || access_token == null)
+                    if (stringarr.Length < 3)
                     {
                         Console.WriteLine(@"Invalid request");
                         ErrorResponse(context, @"Invalid request parameter");
@@ -73,15 +72,13 @@ namespace WopiCobaltHost
 
                     var filename = stringarr[3];
                     //use filename as session id just test, recommend use file id and lock id as session id
-                    EditSession editSession = CobaltSessionManager.Instance.GetSession(filename);
+                    EditSession editSession = EditSessionManager.Instance.GetSession(filename);
                     if (editSession == null)
                     {
                         var fileExt = filename.Substring(filename.LastIndexOf('.') + 1);
-                        if (fileExt.ToLower().Equals(@"xlsx"))
-                            editSession = new FileSession(filename, m_docsPath + "/" + filename, @"yonggui.yu", @"yuyg", @"yonggui.yu@emacle.com", false);
-                        else
-                            editSession = new CobaltSession(filename, m_docsPath + "/" + filename, @"yonggui.yu", @"yuyg", @"yonggui.yu@emacle.com", false);
-                        CobaltSessionManager.Instance.AddSession(editSession);
+                        editSession = new FileSession(filename, m_docsPath + "/" + filename, @"yonggui.yu", @"yuyonggui", @"yonggui.yu@emacle.com", false);
+                       
+                         EditSessionManager.Instance.AddSession(editSession);
                     }
 
                     if (stringarr.Length == 4 && context.Request.HttpMethod.Equals(@"GET"))
@@ -123,7 +120,9 @@ namespace WopiCobaltHost
                     }
                     else if (context.Request.HttpMethod.Equals(@"POST") && context.Request.Headers["X-WOPI-Override"].Equals("COBALT"))
                     {
+                        Console.WriteLine("cobalt, for docx and pptx");
                         //cobalt, for docx and pptx
+                        /*
                         var ms = new MemoryStream();
                         context.Request.InputStream.CopyTo(ms);
                         AtomFromByteArray atomRequest = new AtomFromByteArray(ms.ToArray());
@@ -151,6 +150,7 @@ namespace WopiCobaltHost
                         context.Response.ContentLength64 = response.Length;
                         response.CopyTo(context.Response.OutputStream);
                         context.Response.Close();
+                        */
                     }
                     else if (context.Request.HttpMethod.Equals(@"POST") &&
                         (context.Request.Headers["X-WOPI-Override"].Equals("LOCK") ||

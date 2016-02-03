@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cobalt;
 using System.Security.Cryptography;
 
 namespace WopiCobaltHost
@@ -75,6 +74,6 @@ namespace WopiCobaltHost
         virtual public void Save(byte[] new_content) { }
         virtual public void Dispose() { }
         virtual public void Save() { }
-        virtual public void ExecuteRequestBatch(RequestBatch requestBatch) { }
+  
     }
 }

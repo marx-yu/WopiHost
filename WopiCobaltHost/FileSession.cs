@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Cobalt;
 
 namespace WopiCobaltHost
 {
@@ -35,7 +34,7 @@ namespace WopiCobaltHost
             }
 
             cfi.Version = DateTime.Now.ToString("s");
-            cfi.SupportsCoauth = true;
+            cfi.SupportsCoauth = false;
             cfi.SupportsCobalt = false;
             cfi.SupportsFolders = true;
             cfi.SupportsLocks = true;
