@@ -8,7 +8,7 @@ Welcome any contribution, and discussion of supporting coauthoring
 ### Requirements
 
 Requires Office online 2016(preview) server. 
-No need Microsoft.CobaltCore.dll assembly. 
+*No need Microsoft.CobaltCore.dll assembly.*
 
 ### Known Issues
 
