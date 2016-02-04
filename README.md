@@ -8,7 +8,7 @@ Welcome any contribution, and discussion of supporting coauthoring
 ### Requirements
 
 Requires Microsoft.CobaltCore.dll assembly from Office Web Apps server.  
-** Compatible with Office Web Apps 2013 **
+**Compatible with Office Web Apps 2013**
 
 ### Known Issues
 
