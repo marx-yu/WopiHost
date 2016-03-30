@@ -16,7 +16,7 @@ Doesn't support coauthoring.
 
 ### Usage & Examples
 
-http://[owas.domain]/we/wordviewerframe.aspx?WOPISrc=http%3a%2f%2flocalhost%3a8080%2fwopi%2ffiles%2fword.docx&access_token=[token]&ui=zh-CN 
+http://[owas.domain]/we/WordEditorFrame.aspx?WOPISrc=http%3a%2f%2flocalhost%3a8080%2fwopi%2ffiles%2fword.docx&access_token=[token]&ui=zh-CN 
 
 http://[owas.domain]/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=http%3a%2f%2flocalhost%3a8080%2fwopi%2ffiles%2fppt.pptx&access_token=[token]&ui=zh-CN 
 
