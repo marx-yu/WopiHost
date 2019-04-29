@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Web;
 
 namespace WopiCobaltHost
 {
@@ -27,6 +28,7 @@ namespace WopiCobaltHost
         public void Start()
         {
             m_listener = new HttpListener();
+            // localhost may change to the real hostname or IP
             m_listener.Prefixes.Add(String.Format("http://localhost:{0}/wopi/", m_port));
             m_listener.Start();
             m_listener.BeginGetContext(ProcessRequest, m_listener);
@@ -70,7 +72,7 @@ namespace WopiCobaltHost
                         return;
                     }
 
-                    var filename = stringarr[3];
+                    var filename = HttpUtility.UrlDecode(stringarr[3]);
                     //use filename as session id just test, recommend use file id and lock id as session id
                     EditSession editSession = EditSessionManager.Instance.GetSession(filename);
                     if (editSession == null)

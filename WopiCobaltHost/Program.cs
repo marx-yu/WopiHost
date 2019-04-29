@@ -14,6 +14,7 @@ namespace WopiCobaltHost
     {
         static void Main()
         {
+            // docsPath parameter may change to the real local path that save demo documents(word or excel file)
             CobaltServer svr = new CobaltServer(@"D:\\wopi-docs");
             svr.Start();
 
